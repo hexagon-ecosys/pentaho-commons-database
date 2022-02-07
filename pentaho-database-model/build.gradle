@@ -1,0 +1,89 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+apply from: '../../common/gradle/credentials.gradle'
+
+group = 'pentaho'
+archivesBaseName = 'pentaho-database-model'
+version = '7.0-20220207'
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'pentaho-database-model',
+                'Implementation-Version': version
+    }
+}
+
+// The following 2 settings are still required to set language level for IntelliJ IDEA
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
+compileJava.options.encoding = 'UTF-8'
+compileJava.options.compilerArgs.addAll(['--release', '8'])
+
+repositories {
+    maven {
+        url repoUrl
+        name 'EcoSys'
+        authentication {
+            basic(BasicAuthentication)
+        }
+        credentials  {
+            username = repoUsername
+            password = repoPassword
+        }
+    }
+}
+
+dependencies {
+    implementation 'commons-logging:commons-logging:1.2'
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-all:1.10.19'
+    testImplementation 'org.hamcrest:java-hamcrest:2.0.0.0'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+        resources {
+            srcDir 'src/resources'
+        }
+    }
+    test {
+        java {
+            srcDirs 'test-src' //, 'integration'
+        }
+        resources {
+            srcDir 'test-src/resources'
+        }
+    }
+}
+
+// 7.0-20220205-SNAPSHOT Tests run successfully
+//test.onlyIf {false}
+
+publishing {
+    repositories {
+        maven {
+            url repoUrl
+            name 'EcoSys'
+            authentication {
+                basic(BasicAuthentication)
+            }
+            credentials  {
+                username = repoUsername
+                password = repoPassword
+            }
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            artifactId = archivesBaseName
+            from components.java
+        }
+    }
+}
