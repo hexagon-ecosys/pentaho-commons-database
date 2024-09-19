@@ -32,7 +32,7 @@ public class OracleDatabaseDialect extends AbstractDatabaseDialect {
    */
   private static final long serialVersionUID = -3869260264366995990L;
   private static final IDatabaseType DBTYPE = new DatabaseType( "Oracle", "ORACLE", DatabaseAccessType.getList(
-      DatabaseAccessType.NATIVE, DatabaseAccessType.ODBC, DatabaseAccessType.OCI, DatabaseAccessType.JNDI ), 1521,
+      DatabaseAccessType.NATIVE, DatabaseAccessType.OCI, DatabaseAccessType.JNDI ), 1521,
       "http://download.oracle.com/docs/cd/B19306_01/java.102/b14355/urls.htm#i1006362" );
 
   public OracleDatabaseDialect() {
@@ -101,16 +101,14 @@ public class OracleDatabaseDialect extends AbstractDatabaseDialect {
     String port = databaseConnection.getDatabasePort();
     String hostname = databaseConnection.getHostname();
 
-    if ( databaseConnection.getAccessType() == DatabaseAccessType.ODBC ) {
-      return "jdbc:odbc:" + databaseName;
-    } else if ( databaseConnection.getAccessType() == DatabaseAccessType.NATIVE ) {
+    if ( databaseConnection.getAccessType() == DatabaseAccessType.NATIVE ) {
       // the database name can be a SID (starting with :) or a Service (starting with /)
       // <host>:<port>/<service>
       // <host>:<port>:<SID>
       if ( databaseName != null && databaseName.length() > 0
           && ( databaseName.startsWith( "/" ) || databaseName.startsWith( ":" ) ) ) {
         return getNativeJdbcPre() + hostname + ":" + port + databaseName;
-      } else if ( isEmpty( port ) && ( isEmpty( port ) || port.equals( "-1" ) ) ) { // -1 when file based stored
+      } else if ( isEmpty( port ) || port.equals( "-1" ) || port.equals( "0" ) ) { // -1 when file based stored
                                                                                     // connection
         // support RAC with a self defined URL in databaseName like
         // (DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = host1-vip)(PORT = 1521))(ADDRESS = (PROTOCOL = TCP)(HOST =

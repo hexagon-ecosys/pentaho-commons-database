@@ -12,15 +12,21 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.database.model;
+
+import com.google.gwt.core.shared.GwtIncompatible;
+import org.apache.commons.codec.binary.StringUtils;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.pentaho.database.util.Const;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -84,13 +90,13 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
   // @XmlElement(type=DatabaseType.class)
   IDatabaseType databaseType = null;
 
-  Map<String, String> extraOptions = new HashMap<String, String>();
+  Map<String, String> extraOptions = new TreeMap<>();
 
-  Map<String, String> extraOptionsOrder = new HashMap<String, String>(  );
+  Map<String, String> extraOptionsOrder = new TreeMap<>();
 
-  Map<String, String> attributes = new HashMap<String, String>();
+  Map<String, String> attributes = new TreeMap<>();
 
-  Map<String, String> connectionPoolingProperties = new HashMap<String, String>();
+  Map<String, String> connectionPoolingProperties = new TreeMap<>();
 
   List<PartitionDatabaseMeta> partitioningInformation;
 
@@ -239,8 +245,8 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
    */
   public String getDatabaseName() {
     if ( getDatabaseType() != null
-        && ( databaseName == null || databaseName.trim().length() == 0 ) && !"KettleThin"
-        .equals( getDatabaseType().getShortName() ) ) {
+      && ( databaseName == null || databaseName.trim().length() == 0 ) && !"KettleThin"
+      .equals( getDatabaseType().getShortName() ) ) {
       return getDatabaseType().getDefaultDatabaseName();
     } else {
       return databaseName;
@@ -423,7 +429,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#getAttributes()
    */
   public Map<String, String> getAttributes() {
@@ -432,7 +438,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#setAttributes()
    */
   @Override
@@ -442,7 +448,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#setChanged(boolean)
    */
   public void setChanged( boolean changed ) {
@@ -451,7 +457,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#getChanged()
    */
   public boolean getChanged() {
@@ -460,7 +466,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#setQuoteAllFields(boolean)
    */
   public void setQuoteAllFields( boolean quoteAllFields ) {
@@ -469,7 +475,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#isQuoteAllFields()
    */
   public boolean isQuoteAllFields() {
@@ -479,7 +485,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
   // advanced option (convert to enum with upper, lower, none?)
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#setForcingIdentifiersToLowerCase(boolean)
    */
   public void setForcingIdentifiersToLowerCase( boolean forcingIdentifiersToLowerCase ) {
@@ -488,7 +494,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#isForcingIdentifiersToLowerCase()
    */
   public boolean isForcingIdentifiersToLowerCase() {
@@ -497,7 +503,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#setForcingIdentifiersToUpperCase(boolean)
    */
   public void setForcingIdentifiersToUpperCase( boolean forcingIdentifiersToUpperCase ) {
@@ -506,7 +512,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#isForcingIdentifiersToUpperCase()
    */
   public boolean isForcingIdentifiersToUpperCase() {
@@ -515,7 +521,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#setConnectSql(java.lang.String)
    */
   public void setConnectSql( String connectSql ) {
@@ -524,7 +530,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#getConnectSql()
    */
   public String getConnectSql() {
@@ -533,7 +539,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#setUsingConnectionPool(boolean)
    */
   public void setUsingConnectionPool( boolean usingConnectionPool ) {
@@ -542,7 +548,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#isUsingConnectionPool()
    */
   public boolean isUsingConnectionPool() {
@@ -551,7 +557,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#setInitialPoolSize(int)
    */
   public void setInitialPoolSize( int initialPoolSize ) {
@@ -560,7 +566,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#getInitialPoolSize()
    */
   public int getInitialPoolSize() {
@@ -569,7 +575,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#setMaximumPoolSize(int)
    */
   public void setMaximumPoolSize( int maxPoolSize ) {
@@ -578,7 +584,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#getMaximumPoolSize()
    */
   public int getMaximumPoolSize() {
@@ -587,7 +593,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#setPartitioned(boolean)
    */
   public void setPartitioned( boolean partitioned ) {
@@ -596,7 +602,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#isPartitioned()
    */
   public boolean isPartitioned() {
@@ -605,7 +611,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#getConnectionPoolingProperties()
    */
   public Map<String, String> getConnectionPoolingProperties() {
@@ -614,7 +620,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#setConnectionPoolingProperties(java.util.Map)
    */
   public void setConnectionPoolingProperties( Map<String, String> connectionPoolingProperties ) {
@@ -623,7 +629,7 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#setPartitioningInformation(java.util.List)
    */
   public void setPartitioningInformation( List<PartitionDatabaseMeta> partitioningInformation ) {
@@ -632,11 +638,74 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.pentaho.database.model.IDatabaseConnection#getPartitioningInformation()
    */
   public List<PartitionDatabaseMeta> getPartitioningInformation() {
     return this.partitioningInformation;
+  }
+
+  @GwtIncompatible( "Not required for GWT" )
+  @Override
+  public String calculateHash() {
+
+    String version = System.getProperty( "java.version" );
+    if ( version.startsWith( "1.8" ) ) {  // Can't use Sha3-256 with java 8
+      return DigestUtils.sha256Hex( encodeProperties() );
+    }
+
+    return DigestUtils.sha3_256Hex( encodeProperties() );
+  }
+
+  private String encodeProperties() {
+    StringBuilder sb = new StringBuilder();
+    sb.append( encodeAttribute( "name=", name ) );
+    sb.append( encodeAttribute( "databaseName=", databaseName ) );
+    sb.append( encodeAttribute( "databasePort=", databasePort ) );
+    sb.append( encodeAttribute( "hostname=", hostname ) );
+    sb.append( encodeAttribute( "username=", username ) );
+    sb.append( encodeAttribute( "password", password ) );
+    sb.append( encodeAttribute( "dataTablespace=", dataTablespace ) );
+    sb.append( encodeAttribute( "indexTablespace=", indexTablespace ) );
+    sb.append( encodeAttribute( "streamingResults=", String.valueOf( streamingResults ) ) );
+    sb.append( encodeAttribute( "quoteAllFields=", String.valueOf( quoteAllFields ) ) );
+    sb.append( encodeAttribute( "changed=", String.valueOf( changed ) ) );
+    sb.append( encodeAttribute( "usingDoubleDecimalAsSchemaTableSeparator=", String.valueOf( usingDoubleDecimalAsSchemaTableSeparator ) ) );
+    sb.append( encodeAttribute( "informixServername=", informixServername ) );
+    sb.append( encodeAttribute( "forcingIdentifiersToLowerCase=", String.valueOf( forcingIdentifiersToLowerCase ) ) );
+    sb.append( encodeAttribute( "forcingIdentifiersToUpperCase=", String.valueOf( forcingIdentifiersToUpperCase ) ) );
+    sb.append( encodeAttribute( "connectSql=", connectSql ) );
+    sb.append( encodeAttribute( "usingConnectionPool=", String.valueOf( usingConnectionPool ) ) );
+    sb.append( encodeAttribute( "accessTypeValue=", accessTypeValue ) );
+    sb.append( encodeAttribute( "accessType=", String.valueOf( accessType ) ) );
+    sb.append( encodeAttribute( "databaseType=", String.valueOf( databaseType ) ) );
+    sb.append( encodeAttribute( "partitioningInformation=", String.valueOf( partitioningInformation ) ) );
+    sb.append( encodeAttribute( "initialPoolSize=", String.valueOf( initialPoolSize ) ) );
+    sb.append( encodeAttribute( "maxPoolSize=", String.valueOf( maxPoolSize ) ) );
+    sb.append( encodeAttribute( "partitioned=", String.valueOf( partitioned ) ) );
+    sb.append( encodeAttribute( "extraOptions=", extraOptions ) );
+    sb.append( encodeAttribute( "extraOptionsOrder", extraOptionsOrder ) );
+    sb.append( encodeAttribute( "attributes=", attributes ) );
+    sb.append( encodeAttribute( "connectionPoolingProperties=", connectionPoolingProperties ) );
+
+    return sb.toString();
+  }
+
+  private String encodeAttribute( String attName, String val ) {
+    return attName + "=" + ( val == null || val.isEmpty() ? "" : val ) + ",";
+  }
+
+  private String encodeAttribute( String attName, Map<String, String> attributeMap ) {
+    StringBuilder sb = new StringBuilder();
+    sb.append( attName ).append( "=[" );
+    for (Map.Entry<String, String> entry : attributeMap.entrySet()) {
+      if ( entry.getValue() != null && !entry.getValue().isEmpty() ) {
+        sb.append( encodeAttribute( entry.getKey(), entry.getValue() ) );
+      }
+    }
+    sb.append( "]" );
+
+    return sb.toString();
   }
 
   @Override
@@ -652,17 +721,17 @@ public class DatabaseConnection implements Serializable, IDatabaseConnection {
   @Override
   public String toString() {
     return "DatabaseConnection [id=" + id + ", name=" + name + ", databaseName=" + databaseName + ", databasePort="
-        + databasePort + ", hostname=" + hostname + ", username=" + username + ", password=*****"
-        + ", dataTablespace=" + dataTablespace + ", indexTablespace=" + indexTablespace + ", streamingResults="
-        + streamingResults + ", quoteAllFields=" + quoteAllFields + ", changed=" + changed
-        + ", usingDoubleDecimalAsSchemaTableSeparator=" + usingDoubleDecimalAsSchemaTableSeparator
-        + ", informixServername=" + informixServername + ", forcingIdentifiersToLowerCase="
-        + forcingIdentifiersToLowerCase + ", forcingIdentifiersToUpperCase=" + forcingIdentifiersToUpperCase
-        + ", connectSql=" + connectSql + ", usingConnectionPool=" + usingConnectionPool + ", accessTypeValue="
-        + accessTypeValue + ", accessType=" + accessType + ", databaseType=" + databaseType + ", extraOptions="
-        + extraOptions + ", attributes=" + attributes + ", connectionPoolingProperties=" + connectionPoolingProperties
-        + ", partitioningInformation=" + partitioningInformation + ", initialPoolSize=" + initialPoolSize
-        + ", maxPoolSize=" + maxPoolSize + ", partitioned=" + partitioned + "]";
+      + databasePort + ", hostname=" + hostname + ", username=" + username + ", password=*****"
+      + ", dataTablespace=" + dataTablespace + ", indexTablespace=" + indexTablespace + ", streamingResults="
+      + streamingResults + ", quoteAllFields=" + quoteAllFields + ", changed=" + changed
+      + ", usingDoubleDecimalAsSchemaTableSeparator=" + usingDoubleDecimalAsSchemaTableSeparator
+      + ", informixServername=" + informixServername + ", forcingIdentifiersToLowerCase="
+      + forcingIdentifiersToLowerCase + ", forcingIdentifiersToUpperCase=" + forcingIdentifiersToUpperCase
+      + ", connectSql=" + connectSql + ", usingConnectionPool=" + usingConnectionPool + ", accessTypeValue="
+      + accessTypeValue + ", accessType=" + accessType + ", databaseType=" + databaseType + ", extraOptions="
+      + extraOptions + ", attributes=" + attributes + ", connectionPoolingProperties=" + connectionPoolingProperties
+      + ", partitioningInformation=" + partitioningInformation + ", initialPoolSize=" + initialPoolSize
+      + ", maxPoolSize=" + maxPoolSize + ", partitioned=" + partitioned + "]";
   }
 
 }

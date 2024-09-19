@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2017 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2024 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.database.dialect;
@@ -24,6 +24,7 @@ import org.pentaho.database.model.DatabaseType;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 
+
 public class MySQLDatabaseDialect extends AbstractDatabaseDialect {
 
   /**
@@ -31,7 +32,7 @@ public class MySQLDatabaseDialect extends AbstractDatabaseDialect {
    */
   private static final long serialVersionUID = 8317996922081590794L;
   private static final IDatabaseType DBTYPE = new DatabaseType( "MySQL", "MYSQL", DatabaseAccessType.getList(
-      DatabaseAccessType.NATIVE, DatabaseAccessType.ODBC, DatabaseAccessType.JNDI ), 3306,
+      DatabaseAccessType.NATIVE, DatabaseAccessType.JNDI ), 3306,
       "http://dev.mysql.com/doc/refman/5.0/en/connector-j-reference-configuration-properties.html" );
 
   public MySQLDatabaseDialect() {
@@ -43,9 +44,14 @@ public class MySQLDatabaseDialect extends AbstractDatabaseDialect {
   }
 
   public String getNativeDriver() {
-    return "org.gjt.mm.mysql.Driver";
+    String driver = "com.mysql.cj.jdbc.Driver";
+    try {
+      Class.forName( driver );
+    } catch ( ClassNotFoundException e ) {
+      driver = "com.mysql.jdbc.Driver";
+    }
+    return driver;
   }
-
   /**
    * Generates the SQL statement to add a column to the specified table
    * 
@@ -235,15 +241,11 @@ public class MySQLDatabaseDialect extends AbstractDatabaseDialect {
 
   @Override
   public String getURL( IDatabaseConnection connection ) throws DatabaseDialectException {
-    if ( connection.getAccessType() == DatabaseAccessType.ODBC ) {
-      return "jdbc:odbc:" + connection.getDatabaseName();
+    if ( isEmpty( connection.getDatabasePort() ) ) {
+      return getNativeJdbcPre() + connection.getHostname() + "/" + connection.getDatabaseName();
     } else {
-      if ( isEmpty( connection.getDatabasePort() ) ) {
-        return getNativeJdbcPre() + connection.getHostname() + "/" + connection.getDatabaseName();
-      } else {
-        return getNativeJdbcPre() + connection.getHostname() + ":" + connection.getDatabasePort() + "/"
-            + connection.getDatabaseName();
-      }
+      return getNativeJdbcPre() + connection.getHostname() + ":" + connection.getDatabasePort() + "/"
+        + connection.getDatabaseName();
     }
   }
 

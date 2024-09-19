@@ -12,7 +12,7 @@
 * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 * See the GNU Lesser General Public License for more details.
 *
-* Copyright (c) 2002-2019 Hitachi Vantara..  All rights reserved.
+* Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
 */
 
 package org.pentaho.ui.database.event;
@@ -22,6 +22,7 @@ import org.pentaho.database.model.DatabaseAccessType;
 import org.pentaho.database.model.IDatabaseConnection;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.util.DatabaseTypeHelper;
+import org.pentaho.gwt.widgets.client.listbox.CustomListBox;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.components.XulListitem;
@@ -77,7 +78,6 @@ public class GwtFragmentHandler extends AbstractXulEventHandler implements IFrag
     supportedFragments.add( "oracle_jndi.xul" );
     supportedFragments.add( "oracle_native.xul" );
     supportedFragments.add( "oracle_oci.xul" );
-    supportedFragments.add( "oracle_odbc.xul" );
     supportedFragments.add( "kettlethin_native.xul" );
     supportedFragments.add( "sapr3_plugin.xul" );
     supportedFragments.add( "snowflakehv_native.xul" );
@@ -133,7 +133,16 @@ public class GwtFragmentHandler extends AbstractXulEventHandler implements IFrag
 
   @Bindable
   public void refreshOptions() {
-    refreshOptionsWithCallback( null );
+    refreshOptionsWithCallback( new IFragmentHandler.Callback() {
+      @Override
+      public void callback() {
+        if ( accessBox != null ) {
+          CustomListBox accessBoxWidget = (CustomListBox) accessBox.getManagedObject();
+          accessBoxWidget.setFocus( true );
+          accessBoxWidget.scrollSelectedItemIntoView();
+        }
+      }
+    } );
   }
 
   /**
@@ -186,9 +195,6 @@ public class GwtFragmentHandler extends AbstractXulEventHandler implements IFrag
         break;
       case OCI:
         fragment = getFragment( database, "_oci.xul", "common_native.xul" ); //$NON-NLS-1$ //$NON-NLS-2$
-        break;
-      case ODBC:
-        fragment = getFragment( database, "_odbc.xul", "common_odbc.xul" ); //$NON-NLS-1$ //$NON-NLS-2$
         break;
       case PLUGIN:
         fragment = getFragment( database, "_plugin.xul", "common_native.xul" ); //$NON-NLS-1$ //$NON-NLS-2$

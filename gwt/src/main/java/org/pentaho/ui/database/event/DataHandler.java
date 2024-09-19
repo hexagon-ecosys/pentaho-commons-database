@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2021 Hitachi Vantara..  All rights reserved.
+ * Copyright (c) 2002-2023 Hitachi Vantara..  All rights reserved.
  */
 
 package org.pentaho.ui.database.event;
@@ -38,6 +38,7 @@ import org.pentaho.database.model.IDatabaseConnectionPoolParameter;
 import org.pentaho.database.model.IDatabaseType;
 import org.pentaho.database.model.PartitionDatabaseMeta;
 import org.pentaho.database.util.DatabaseTypeHelper;
+import org.pentaho.gwt.widgets.client.listbox.CustomListBox;
 import org.pentaho.gwt.widgets.client.utils.NameUtils;
 import org.pentaho.gwt.widgets.client.utils.string.StringUtils;
 import org.pentaho.ui.database.event.ILaunch.Status;
@@ -97,6 +98,9 @@ public class DataHandler extends AbstractXulEventHandler {
   // Kettle thin related
   private static final String EXTRA_OPTION_WEB_APPLICATION_NAME = "KettleThin.webappname";
   private static final String DEFAULT_WEB_APPLICATION_NAME = "pentaho";
+
+  private static final String DEFAULT_DATASTORE_INITIAL_SIZE = "0";
+  private static final String DEFAULT_DATASTORE_MAXIMUM_SIZE = "20";
 
   protected DatabaseDialogListener listener;
 
@@ -317,10 +321,12 @@ public class DataHandler extends AbstractXulEventHandler {
 
   @Bindable
   public void setAzureSqlDBAuthRelatedFieldsVisible() {
-    passwordBox.setDisabled( azureSqlDBJdbcAuthMethod != null
-        && ( "Azure Active Directory - Universal With MFA".equals( azureSqlDBJdbcAuthMethod.getValue() )
-        || "Azure Active Directory - Integrated".equals( azureSqlDBJdbcAuthMethod.getValue() ) ) );
-    userNameBox.setDisabled( azureSqlDBJdbcAuthMethod != null && "Azure Active Directory - Integrated".equals( azureSqlDBJdbcAuthMethod.getValue() ) );
+    if ( azureSqlDBJdbcAuthMethod != null ) {
+      passwordBox.setDisabled(
+          "Azure Active Directory - Universal With MFA".equals( azureSqlDBJdbcAuthMethod.getValue() )
+        || "Azure Active Directory - Integrated".equals( azureSqlDBJdbcAuthMethod.getValue() ) );
+      userNameBox.setDisabled( "Azure Active Directory - Integrated".equals( azureSqlDBJdbcAuthMethod.getValue() ) );
+    }
   }
 
   @Bindable
@@ -391,7 +397,16 @@ public class DataHandler extends AbstractXulEventHandler {
       accessBox.setSelectedItem( accessKey );
 
       // Refreshes the options since the above selection may not fire the selected item event
-      fragmentHandler.refreshOptionsWithCallback( null );
+      fragmentHandler.refreshOptionsWithCallback(new IFragmentHandler.Callback() {
+        @Override
+        public void callback() {
+          if ( connectionBox != null ) {
+            CustomListBox connectionBoxWidget = (CustomListBox) connectionBox.getManagedObject();
+            connectionBoxWidget.setFocus( true );
+            connectionBoxWidget.scrollSelectedItemIntoView();
+          }
+        }
+      } );
 
       if ( databaseConnection != null ) {
         Map<String, String> options = databaseConnection.getExtraOptions();
@@ -1073,7 +1088,10 @@ public class DataHandler extends AbstractXulEventHandler {
       if ( databaseConnection.getId() != null ) {
         poolingCheck.setChecked( databaseConnection.isUsingConnectionPool() );
       } else {
-        poolingCheck.setChecked( true ); // new connection, default to true
+        // new connection, default values
+        poolingCheck.setChecked( true );
+        poolSizeBox.setValue( DEFAULT_DATASTORE_INITIAL_SIZE );
+        maxPoolSizeBox.setValue( DEFAULT_DATASTORE_MAXIMUM_SIZE );
       }
     }
 
@@ -1083,7 +1101,6 @@ public class DataHandler extends AbstractXulEventHandler {
       if ( poolSizeBox != null ) {
         poolSizeBox.setValue( Integer.toString( databaseConnection.getInitialPoolSize() ) );
       }
-
       if ( maxPoolSizeBox != null ) {
         maxPoolSizeBox.setValue( Integer.toString( databaseConnection.getMaximumPoolSize() ) );
       }
@@ -1871,7 +1888,7 @@ public class DataHandler extends AbstractXulEventHandler {
   }
 
   private native void jsni_showContextHelp( final String baseDocUrl )/*-{
-   $wnd.open(baseDocUrl + "Setup/Define_data_connections",
+   $wnd.open(baseDocUrl + "mk-95pdia001/pentaho-configuration/tasks-to-be-performed-by-a-pentaho-administrator/define-data-connections",
        "webHelp","width=1200,height=600,location=no,status=no,toolbar=no");
   }-*/;
 
